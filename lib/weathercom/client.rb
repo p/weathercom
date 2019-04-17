@@ -57,7 +57,14 @@ class Client
 
   # endpoints
 
-  def geocode(location_str)
+  def geocode(query)
+    url = "/v3/location/search?language=EN&apiKey=#{URI.encode(api_key)}&query=#{URI.encode(query)}&format=json"
+    payload = get_json(url)
+    payload = Hash[payload['location'].map do |key, values|
+      [key, values.first]
+    end]
+
+    GeocodedLocation.new(payload, self)
   end
 
   def location(lat, lng)
