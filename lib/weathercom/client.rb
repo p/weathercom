@@ -10,13 +10,16 @@ class Client
     attr_reader :status
   end
 
+  class ApiKeyScrapeError < StandardError
+  end
+
   def initialize(api_key: nil, cache_path: nil)
     @configured_api_key = api_key
     @connection ||= Faraday.new("https://api.weather.com") do |f|
       f.request :url_encoded
       #f.response :detailed_logger
       f.adapter Faraday.default_adapter
-      f.headers['user-agent'] = 'Weathercom'
+      f.headers['user-agent'] = 'Mozilla/5.0 (Compatible)'
     end
   end
 
@@ -25,6 +28,7 @@ class Client
 
   def api_key
     configured_api_key or begin
+      @api_key ||= scrape_api_key
     end
   end
 
@@ -58,6 +62,23 @@ class Client
 
   def location(lat, lng)
     Location.new(lat, lng, self)
+  end
+
+  private
+
+  API_KEY_URL = "https://www.wunderground.com/weather/us/ny/new-york"
+
+  def scrape_api_key
+    resp = connection.get(API_KEY_URL)
+    if resp.status != 200
+      raise ApiKeyScrapeError, "Non-200 status while scraping API key: #{resp.status}"
+    end
+
+    unless resp.body =~ /apiKey=([a-zA-Z0-9]{10,})/
+      raise ApiKeyScrapeError, "Could not locate API key in response"
+    end
+
+    $1
   end
 end
 
