@@ -16,6 +16,10 @@ class GeocodedLocation < Location
       @info[key]
     end
   end
+
+  alias :admin_district :state_name
+  alias :admin_district_code :state_abbr
+  alias :postal_code :zipcode
 end
 
 end
