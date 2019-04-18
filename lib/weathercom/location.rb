@@ -9,7 +9,7 @@ class Location
   attr_reader :lng
   attr_reader :client
 
-  def current
+  def current_observation
     client.get_json("#{url_prefix}/observations/current")
   end
 
