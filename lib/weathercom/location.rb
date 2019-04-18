@@ -40,7 +40,7 @@ class Location
   end
 
   def query
-    "apiKey=#{URI.encode(client.api_key)}&units=e"
+    "units=e"
   end
 end
 

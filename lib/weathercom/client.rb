@@ -36,29 +36,43 @@ class Client
     request_json(:get, url)
   end
 
-  def request_json(meth, url, params=nil)
-    response = connection.send(meth) do |req|
-      req.url(url)
-    end
-    unless response.status == 200
-      error = nil
-      begin
-        error = JSON.parse(response.body)['error']
-      rescue
+  def request_json(meth, url)
+    attempt = 1
+    begin
+      if url.include?('?')
+        full_url = "#{url}&apiKey=#{URI.encode(api_key)}"
+      else
+        full_url = "#{url}?apiKey=#{URI.encode(api_key)}"
       end
-      msg = "Weathercom #{meth.to_s.upcase} #{url} failed: #{response.status}"
-      if error
-        msg += ": #{error}"
+
+      response = connection.send(meth) do |req|
+        req.url(full_url)
       end
-      raise ApiError.new(msg, status: response.status)
+      if response.status == 401 && configured_api_key.nil? && attempt == 1
+        @api_key = nil
+        attempt += 1
+        retry
+      end
+      unless response.status == 200
+        error = nil
+        begin
+          error = JSON.parse(response.body)['error']
+        rescue
+        end
+        msg = "Weathercom #{meth.to_s.upcase} #{url} failed: #{response.status}"
+        if error
+          msg += ": #{error}"
+        end
+        raise ApiError.new(msg, status: response.status)
+      end
+      JSON.parse(response.body)
     end
-    JSON.parse(response.body)
   end
 
   # endpoints
 
   def geocode(query)
-    url = "/v3/location/search?language=EN&apiKey=#{URI.encode(api_key)}&query=#{URI.encode(query)}&format=json"
+    url = "/v3/location/search?language=EN&query=#{URI.encode(query)}&format=json"
     payload = get_json(url)
     payload = Hash[payload['location'].map do |key, values|
       [key, values.first]
