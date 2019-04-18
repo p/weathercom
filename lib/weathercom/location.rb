@@ -13,23 +13,24 @@ class Location
     client.get_json("#{url_prefix}/observations/current.json")
   end
 
-  def daily_5
+  def daily_forecast_5
     client.get_json("#{url_prefix}/forecast/daily/5day.json?#{query}")
   end
 
-  def daily_10
+  def daily_forecast_10
     client.get_json("#{url_prefix}/forecast/daily/10day.json?#{query}")
   end
 
-  alias :daily :daily_10
+  alias :daily_forecast :daily_forecast_10
 
-  def hourly_240
+  def hourly_forecast_240
     client.get_json("#{url_prefix}/forecast/hourly/240hour.json?#{query}")
   end
 
-  alias :hourly :hourly_240
+  alias :hourly_forecast :hourly_forecast_240
 
-  def wwir
+  # When Will It Rain Forecast
+  def wwir_forecast
     client.get_json("#{url_prefix}/forecast/wwir.json?#{query}")
   end
 
