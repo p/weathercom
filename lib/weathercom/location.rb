@@ -10,33 +10,33 @@ class Location
   attr_reader :client
 
   def current_observation
-    client.get_json("#{url_prefix}/observations/current")
+    client.get_json("#{url_prefix}/observations/current.json")
   end
 
   def daily_5
-    client.get_json("#{url_prefix}/forecast/daily/5day?#{query}")
+    client.get_json("#{url_prefix}/forecast/daily/5day.json?#{query}")
   end
 
   def daily_10
-    client.get_json("#{url_prefix}/forecast/daily/10day?#{query}")
+    client.get_json("#{url_prefix}/forecast/daily/10day.json?#{query}")
   end
 
   alias :daily :daily_10
 
   def hourly_240
-    client.get_json("#{url_prefix}/forecast/hourly/240hour?#{query}")
+    client.get_json("#{url_prefix}/forecast/hourly/240hour.json?#{query}")
   end
 
   alias :hourly :hourly_240
 
   def wwir
-    client.get_json("#{url_prefix}/forecast/wwir?#{query}")
+    client.get_json("#{url_prefix}/forecast/wwir.json?#{query}")
   end
 
   private
 
   def url_prefix
-    "/v1/geocode/#{URI.encode(lat)}/#{URI.encode(lng)}"
+    "/v1/geocode/#{URI.encode(lat.to_s)}/#{URI.encode(lng.to_s)}"
   end
 
   def query

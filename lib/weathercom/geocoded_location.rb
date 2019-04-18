@@ -17,9 +17,9 @@ class GeocodedLocation < Location
     end
   end
 
-  alias :admin_district :state_name
-  alias :admin_district_code :state_abbr
-  alias :postal_code :zipcode
+  alias :state_name :admin_district
+  alias :state_abbr :admin_district_code
+  alias :zipcode :postal_code
 end
 
 end

@@ -38,7 +38,7 @@ class Client
 
   def request_json(meth, url)
     attempt = 1
-    begin
+    loop do
       if url.include?('?')
         full_url = "#{url}&apiKey=#{URI.encode(api_key)}"
       else
@@ -51,7 +51,7 @@ class Client
       if response.status == 401 && configured_api_key.nil? && attempt == 1
         @api_key = nil
         attempt += 1
-        retry
+        next
       end
       unless response.status == 200
         error = nil
@@ -65,7 +65,7 @@ class Client
         end
         raise ApiError.new(msg, status: response.status)
       end
-      JSON.parse(response.body)
+      return JSON.parse(response.body)
     end
   end
 
