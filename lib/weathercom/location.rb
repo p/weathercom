@@ -10,28 +10,39 @@ class Location
   attr_reader :client
 
   def current_observation
-    client.get_json("#{url_prefix}/observations/current.json")
+    payload = client.get_json("#{url_prefix}/observations/current.json")
+    Observation.new(payload['observation'], payload['metadata'])
   end
 
   def daily_forecast_5
-    client.get_json("#{url_prefix}/forecast/daily/5day.json?#{query}")
+    payload = client.get_json("#{url_prefix}/forecast/daily/5day.json?#{query}")
+    payload['forecasts'].map do |info|
+      DailyForecast.new(info, payload['metadata'])
+    end
   end
 
   def daily_forecast_10
-    client.get_json("#{url_prefix}/forecast/daily/10day.json?#{query}")
+    payload = client.get_json("#{url_prefix}/forecast/daily/10day.json?#{query}")
+    payload['forecasts'].map do |info|
+      DailyForecast.new(info, payload['metadata'])
+    end
   end
 
   alias :daily_forecast :daily_forecast_10
 
   def hourly_forecast_240
-    client.get_json("#{url_prefix}/forecast/hourly/240hour.json?#{query}")
+    payload = client.get_json("#{url_prefix}/forecast/hourly/240hour.json?#{query}")
+    payload['forecasts'].map do |info|
+      HourlyForecast.new(info, payload['metadata'])
+    end
   end
 
   alias :hourly_forecast :hourly_forecast_240
 
   # When Will It Rain Forecast
   def wwir_forecast
-    client.get_json("#{url_prefix}/forecast/wwir.json?#{query}")
+    payload = client.get_json("#{url_prefix}/forecast/wwir.json?#{query}")
+    WwirForecast.new(payload['forecast'], payload['metadata'])
   end
 
   private

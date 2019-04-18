@@ -4,7 +4,7 @@ class GeocodedLocation < Location
   def initialize(info, client)
     info = info.dup
     super(info.delete('latitude'), info.delete('longitude'), client)
-    @info = info
+    @info = info.freeze
   end
 
   %w(address admin_district admin_district_code city country country_code
