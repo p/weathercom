@@ -3,6 +3,7 @@ require 'faraday'
 
 require 'weathercom/client'
 require 'weathercom/location'
+require 'weathercom/metadata'
 require 'weathercom/geocoded_location'
 require 'weathercom/forecast_methods'
 require 'weathercom/daily_forecast'

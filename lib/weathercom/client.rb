@@ -13,8 +13,9 @@ class Client
   class ApiKeyScrapeError < StandardError
   end
 
-  def initialize(api_key: nil, cache_path: nil)
+  def initialize(api_key: nil, cache: nil)
     @configured_api_key = api_key
+    @cache = cache
     @connection ||= Faraday.new("https://api.weather.com") do |f|
       f.request :url_encoded
       #f.response :detailed_logger
@@ -66,6 +67,23 @@ class Client
         raise ApiError.new(msg, status: response.status)
       end
       return JSON.parse(response.body)
+    end
+  end
+
+  def request_json_with_cache(meth, url)
+    if cache && (data = cache.get(cache_key)
+      if data.key?('metadata') && data['metadata'].key?('expire_time_gmt') &&
+        data['metadata']['expire_time_gmt'] > Time.now.to_i
+      then
+        return data
+      end
+      cache.set(cache_key, nil)
+    end
+
+    request_json(meth, url).tap do |data|
+      if cache
+        cache.set(cache_key, data)
+      end
     end
   end
 

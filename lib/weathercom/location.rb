@@ -11,20 +11,20 @@ class Location
 
   def current_observation
     payload = client.get_json("#{url_prefix}/observations/current.json")
-    Observation.new(payload['observation'], payload['metadata'])
+    Observation.new(payload['observation'], Metadata.new(payload['metadata']))
   end
 
   def daily_forecast_5
     payload = client.get_json("#{url_prefix}/forecast/daily/5day.json?#{query}")
     payload['forecasts'].map do |info|
-      DailyForecast.new(info, payload['metadata'])
+      DailyForecast.new(info, Metadata.new(payload['metadata']))
     end
   end
 
   def daily_forecast_10
     payload = client.get_json("#{url_prefix}/forecast/daily/10day.json?#{query}")
     payload['forecasts'].map do |info|
-      DailyForecast.new(info, payload['metadata'])
+      DailyForecast.new(info, Metadata.new(payload['metadata']))
     end
   end
 
@@ -33,7 +33,7 @@ class Location
   def hourly_forecast_240
     payload = client.get_json("#{url_prefix}/forecast/hourly/240hour.json?#{query}")
     payload['forecasts'].map do |info|
-      HourlyForecast.new(info, payload['metadata'])
+      HourlyForecast.new(info, Metadata.new(payload['metadata']))
     end
   end
 
@@ -42,7 +42,7 @@ class Location
   # When Will It Rain Forecast
   def wwir_forecast
     payload = client.get_json("#{url_prefix}/forecast/wwir.json?#{query}")
-    WwirForecast.new(payload['forecast'], payload['metadata'])
+    WwirForecast.new(payload['forecast'], Metadata.new(payload['metadata']))
   end
 
   private
