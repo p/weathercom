@@ -71,7 +71,7 @@ class Client
   end
 
   def request_json_with_cache(meth, url)
-    if cache && (data = cache.get(cache_key)
+    if cache && (data = cache.get(cache_key))
       if data.key?('metadata') && data['metadata'].key?('expire_time_gmt') &&
         data['metadata']['expire_time_gmt'] > Time.now.to_i
       then
