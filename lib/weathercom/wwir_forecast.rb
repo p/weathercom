@@ -1,6 +1,8 @@
 module Weathercom
 
 class WwirForecast
+  include ForecastMethods
+
   def initialize(info, metadata)
     @info = info.dup.freeze
     @metadata = metadata
@@ -18,9 +20,6 @@ class WwirForecast
     end
   end
 
-  def wc_class
-    @info['class']
-  end
 end
 
 end

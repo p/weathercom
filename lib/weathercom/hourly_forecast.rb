@@ -1,6 +1,8 @@
 module Weathercom
 
 class HourlyForecast
+  include ForecastMethods
+
   def initialize(info, metadata)
     @info = info.dup.freeze
     @metadata = metadata
@@ -23,9 +25,6 @@ class HourlyForecast
     end
   end
 
-  def wc_class
-    @info['class']
-  end
 end
 
 end

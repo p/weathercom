@@ -1,6 +1,8 @@
 module Weathercom
 
 class Observation
+  include ForecastMethods
+
   def initialize(info, metadata)
     @info = info.dup.freeze
     @metadata = metadata
@@ -25,9 +27,6 @@ class Observation
     end
   end
 
-  def wc_class
-    @info['class']
-  end
 end
 
 end
