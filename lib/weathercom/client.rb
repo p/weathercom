@@ -22,6 +22,9 @@ class Client
       f.adapter Faraday.default_adapter
       f.headers['user-agent'] = 'Mozilla/5.0 (Compatible)'
     end
+    if api_key.nil?
+      @api_key = cache.get('weathercom:api_key')
+    end
   end
 
   attr_reader :configured_api_key
@@ -30,6 +33,17 @@ class Client
   def api_key
     configured_api_key or begin
       @api_key ||= scrape_api_key
+      if cache
+        cache.set('weathercom:api_key', @api_key)
+      end
+      @api_key
+    end
+  end
+
+  private def clear_api_key
+    @api_key = nil
+    if cache
+      @cache.set('weathercom:api_key', nil)
     end
   end
 
@@ -50,7 +64,7 @@ class Client
         req.url(full_url)
       end
       if response.status == 401 && configured_api_key.nil? && attempt == 1
-        @api_key = nil
+        clear_api_key
         attempt += 1
         next
       end
