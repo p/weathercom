@@ -27,6 +27,29 @@ class Observation
     end
   end
 
+  def sunrise_at
+    Time.parse(sunrise)
+  end
+
+  def sunset_at
+    Time.parse(sunset)
+  end
+
+  def day?
+    day_ind == 'Y'
+  end
+
+  %w(wspd gust vis mslp altimeter temp dewpt rh wc hi temp_change_24hour
+    temp_max_24hour temp_min_24hour pchange feels_like snow_1hour snow_6hour
+    snow_24hour snow_7day ceiling precip_1hour precip_6hour precip_24hour
+    precip_mtd precip_ytd precip_2day precip_3day precip_7day obs_qualifier_100char
+    obs_qualifier_50char obs_qualifier_32char
+  ).each do |m|
+    define_method(m) do
+      @info['imperial'][m]
+    end
+  end
+
 end
 
 end
