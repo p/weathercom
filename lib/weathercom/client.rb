@@ -33,8 +33,8 @@ class Client
   def api_key
     configured_api_key or begin
       @api_key ||= scrape_api_key
-      if cache
-        cache.set('weathercom:api_key', @api_key)
+      if @cache
+        @cache.set('weathercom:api_key', @api_key)
       end
       @api_key
     end
@@ -42,7 +42,7 @@ class Client
 
   private def clear_api_key
     @api_key = nil
-    if cache
+    if @cache
       @cache.set('weathercom:api_key', nil)
     end
   end
@@ -85,18 +85,19 @@ class Client
   end
 
   def request_json_with_cache(meth, url)
-    if cache && (data = cache.get(cache_key))
+    cache_key = "weathercom:#{meth}:#{url}"
+    if @cache && (data = @cache.get(cache_key))
       if data.key?('metadata') && data['metadata'].key?('expire_time_gmt') &&
         data['metadata']['expire_time_gmt'] > Time.now.to_i
       then
         return data
       end
-      cache.set(cache_key, nil)
+      @cache.set(cache_key, nil)
     end
 
     request_json(meth, url).tap do |data|
-      if cache
-        cache.set(cache_key, data)
+      if @cache
+        @cache.set(cache_key, data)
       end
     end
   end
@@ -104,11 +105,24 @@ class Client
   # endpoints
 
   def geocode(query)
-    url = "/v3/location/search?language=EN&query=#{URI.encode(query)}&format=json"
-    payload = get_json(url)
-    payload = Hash[payload['location'].map do |key, values|
-      [key, values.first]
-    end]
+    payload = raw_geocode(query)
+    GeocodedLocation.new(payload, self)
+  end
+
+  def cached_geocode(query, ttl)
+    if @cache
+      cache_key = "weathercom:geocode:#{query}"
+      result = @cache.get(cache_key)
+      if result && result['expires_at'] && result['expires_at'] > Time.now.to_i
+        return GeocodedLocation.new(result['location'], self)
+      end
+    end
+
+    payload = raw_geocode(query)
+
+    if @cache
+      @cache.set(cache_key, 'expires_at' => Time.now.to_i + ttl, 'location' => payload)
+    end
 
     GeocodedLocation.new(payload, self)
   end
@@ -132,6 +146,14 @@ class Client
     end
 
     $1
+  end
+
+  def raw_geocode(query)
+    url = "/v3/location/search?language=EN&query=#{URI.encode(query)}&format=json"
+    payload = get_json(url)
+    payload = Hash[payload['location'].map do |key, values|
+      [key, values.first]
+    end]
   end
 end
 
