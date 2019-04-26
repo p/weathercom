@@ -24,6 +24,21 @@ class DailyForecast
     end
   end
 
+  alias :start_timestamp :fcst_valid
+  alias :expire_timestamp :expire_time_gmt
+
+  def day_forecast
+    @day_forecast ||= if @info.key?('day')
+      DayPartForecast.new(@info['day'])
+    else
+      nil
+    end
+  end
+
+  def night_forecast
+    @night_forecast ||= DayPartForecast.new(@info['night'])
+  end
+
 
 end
 
