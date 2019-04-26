@@ -104,13 +104,8 @@ class Client
 
   # endpoints
 
-  def geocode(query)
-    payload = raw_geocode(query)
-    GeocodedLocation.new(payload, self)
-  end
-
-  def cached_geocode(query, ttl)
-    if @cache
+  def geocode(query, ttl: nil)
+    if @cache && ttl
       cache_key = "weathercom:geocode:#{query}"
       result = @cache.get(cache_key)
       if result && result['expires_at'] && result['expires_at'] > Time.now.to_i
@@ -120,7 +115,7 @@ class Client
 
     payload = raw_geocode(query)
 
-    if @cache
+    if @cache && ttl
       @cache.set(cache_key, 'expires_at' => Time.now.to_i + ttl, 'location' => payload)
     end
 
