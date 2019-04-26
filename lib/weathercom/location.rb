@@ -14,30 +14,30 @@ class Location
     Observation.new(payload['observation'], Metadata.new(payload['metadata']))
   end
 
-  def daily_forecast_5
+  def daily_forecasts_5
     payload = client.get_json("#{url_prefix}/forecast/daily/5day.json?#{query}")
     payload['forecasts'].map do |info|
       DailyForecast.new(info, Metadata.new(payload['metadata']))
     end
   end
 
-  def daily_forecast_10
+  def daily_forecasts_10
     payload = client.get_json("#{url_prefix}/forecast/daily/10day.json?#{query}")
     payload['forecasts'].map do |info|
       DailyForecast.new(info, Metadata.new(payload['metadata']))
     end
   end
 
-  alias :daily_forecast :daily_forecast_10
+  alias :daily_forecasts :daily_forecasts_10
 
-  def hourly_forecast_240
+  def hourly_forecasts_240
     payload = client.get_json("#{url_prefix}/forecast/hourly/240hour.json?#{query}")
     payload['forecasts'].map do |info|
       HourlyForecast.new(info, Metadata.new(payload['metadata']))
     end
   end
 
-  alias :hourly_forecast :hourly_forecast_240
+  alias :hourly_forecasts :hourly_forecasts_240
 
   # When Will It Rain Forecast
   def wwir_forecast
