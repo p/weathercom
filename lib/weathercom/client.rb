@@ -51,6 +51,10 @@ class Client
     request_json(:get, url)
   end
 
+  def get_json_with_cache(url)
+    request_json_with_cache(:get, url)
+  end
+
   def request_json(meth, url)
     attempt = 1
     loop do
