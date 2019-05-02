@@ -25,6 +25,12 @@ class HourlyForecast
     end
   end
 
+  alias :start_timestamp :fcst_valid
+  alias :expire_timestamp :expire_time_gmt
+
+  alias :precip_probability :pop
+  alias :phrase :phrase_32char
+
 end
 
 end

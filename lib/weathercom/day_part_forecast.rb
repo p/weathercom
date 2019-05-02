@@ -32,6 +32,13 @@ class DayPartForecast
 
   alias :start_timestamp :fcst_valid
   alias :precip_probability :pop
+  alias :phrase :phrase_32char
+
+  # Narrative without the temperature and wind speed, which is available
+  # via other attributes
+  def cut_narrative
+    narrative.sub(/\..*/, '')
+  end
 
 end
 
